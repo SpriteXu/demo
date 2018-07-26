@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+
+  <!-- Bootstrap -->
+ <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+ <style media="screen">
+ body{
+     background: #87CEFF;
+ }
+ .row{
+   margin-top: 30px;
+ }
+img{
+  height: 200px !important;
+}
+a{
+  text-decoration: none !important
+}
+.jumbotron>h3{
+  padding-bottom: 25px;
+}
+.img-circle{
+  position: relative;
+  left:100px;
+}
+.obox{
+  margin-top: 50px;
+}
+.thumbnail{
+  background:rgba(209,238,238, 0.9);
+}
+.thumbnail:hover{
+  background:rgba(209,238,238, 0.5);
+}
+ </style>
+</head>
+<body>
+  <!--采用栅格系统布局-->
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-4">
+        <div class="input-group">
+          <span class="input-group-addon" id="basic-addon1">Hero</span>
+            <input type="text" class="form-control" placeholder="HeroCount" aria-describedby="basic-addon1">
+        </div>
+       </div>
+        <div class="col-lg-4">
+              <button type="button" class="btn btn-success " >查找</button>
+        </div>
+      </div>
+      <div class="row" id="box">
+      </div>
+    </div>
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">模板页</h4>
+      </div>
+      <div class="modal-body">
+       <div class="jumbotron">
+           <h3 class="text-center text-success"><span class="lable lable-default "></span> <span class="label label-success">Success</span></h3>
+           <img src="" class="img-circle" alt="">
+           <div class="obox"><p class="text-info text-center">212</p></div>
+       </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
+<!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->
+<script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+<!-- 加载 Bootstrap 的所有 JavaScript 插件。你也可以根据需要只加载单个插件。 -->
+<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script>
+$(function(){
+  var btn=document.querySelector('.btn-success');
+  var box=document.getElementById('box');
+  //DOM2监听事件
+    btn.addEventListener('click',function(){
+    var num=document.querySelector('.form-control').value;
+    var xhr=new XMLHttpRequest();
+    xhr.onreadystatechange=function(){
+      if (xhr.readyState==4) {
+        if (xhr.status>=200&&xhr.status<300||xhr.status==304) {
+
+         //JSON反序列化
+         var obj=JSON.parse(xhr.responseText);
+         //初始化box盒模型
+           box.innerHTML=' ';
+       for (var i = 0; i <num; i++) {
+         //生成DOM树
+           box.innerHTML+='<div class="col-lg-4"><a href="javascript:;" class="thumbnail text-success text-center"><h3>'+obj[i]["name"]+'</h3><img class="img-rounded" src='+obj[i]["src"]+' alt="..."></a></div>'
+ }
+   }
+   }
+  }
+    //准备发送请求
+    xhr.open('get','demo.php',true);
+    //发送请求
+    xhr.send(null);
+    //完成查询功能
+    //开始模态框
+  })
+$('#box').on('click','a',function(){
+  var node=this.text;
+   var xhr=new XMLHttpRequest();
+   xhr.onreadystatechange=function(){
+      if (xhr.readyState==4) {
+         if (xhr.status>=200&&xhr.status<300||xhr.status==304) {
+           //由于后台逻辑没写 通过前端js来筛选需要的数据
+           var ojson=JSON.parse(xhr.responseText);
+          for (var i = 0; i < ojson.length; i++) {
+            if (ojson[i].name==node) {
+              $('.lable-default').html(node);
+              $('.img-circle').attr('src',ojson[i].src);
+              $('.jumbotron').find("p").html(ojson[i].text);
+            }
+            //模态框的显示
+        $('#myModal').modal("show");
+          }
+         }
+      }
+   }
+   //准备发送请求
+   xhr.open('get','demo.php',true);
+   //发送请求
+   xhr.send(null);
+
+})
+
+})
+</script>
